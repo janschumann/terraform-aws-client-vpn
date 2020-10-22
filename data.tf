@@ -13,7 +13,11 @@ data "aws_security_group" "this" {
 }
 
 data "aws_subnet" "this" {
-  for_each = toset(var.subnets)
-  vpc_id   = var.vpc_id
+  for_each = toset(var.subnet_ids)
   id       = each.value
+}
+
+data "aws_vpc" "this" {
+  count = local.vpc_id != ""
+  id    = local.vpc_id
 }
