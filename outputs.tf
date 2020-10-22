@@ -1,5 +1,6 @@
 output "errors" {
-  value = local.errors > 0 ? format("Resources could not be created:\n%s", join("\n- ", local.errors)) : ""
+  description = "Error messages."
+  value       = local.errors > 0 ? format("Resources could not be created:\n%s", join("\n- ", local.errors)) : ""
 }
 
 output "dns_name" {

@@ -76,6 +76,7 @@ module "client-vpn" {
 |------|---------|
 | terraform | ~> 0.12 |
 | aws | ~> 2.7 |
+| local | ~> 1.0 |
 
 ## Inputs
 
@@ -87,8 +88,8 @@ module "client-vpn" {
 | name | The name of this VPN. | `string` | n/a | yes |
 | security\_group\_name | The security group name to access the VPN server. | `string` | n/a | yes |
 | server\_certificate\_name | The name of the server certificate in AWS ACM. | `string` | n/a | yes |
-| subnets | The subnets to associate with this VPN. | `list(string)` | n/a | yes |
-| vpc\_id | The VPC id of the remote network. | `string` | n/a | yes |
+| subnet\_ids | The ids of the subnets to associate with this VPN. | `list(string)` | n/a | yes |
+| transport\_protocol | The transport protocol. (UDP or TCP). | `string` | n/a | yes |
 | write\_ovpn\_config | Write an openVPN config file. | `bool` | `false` | no |
 
 ## Outputs
@@ -97,5 +98,5 @@ module "client-vpn" {
 |------|-------------|
 | client\_cidr | The address space of VPN clients. |
 | dns\_name | The dns name of the VPN server. |
+| errors | Error messages. |
 | routes | A list of route information in the form {network, netmask}. |
-
