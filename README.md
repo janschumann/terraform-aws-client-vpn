@@ -10,24 +10,20 @@ https://labrlearning.medium.com/remote-access-to-aws-with-the-client-vpn-6c43cd7
 ## Usage
 
 ```hcl
-
-locals {
-  subnets = {
-    "eu-west-1a" = "10.100.10.0/24"
-    "eu-west-1b" = "10.100.11.0/24" 
-  }
-}
-
 resource "aws_vpc" "test" {
   cidr_block = "10.100.0.0/16"
 }
 
-resource "aws_subnet" "target" {
-  for_each = local.subnets
-
+resource "aws_subnet" "target_a" {
   vpc_id            = aws_vpc.test.id
-  cidr_block        = each.value
-  availability_zone = each.key
+  cidr_block        = "10.100.10.0/24"
+  availability_zone = "eu-west-1a"
+}
+
+resource "aws_subnet" "target_b" {
+  vpc_id            = aws_vpc.test.id
+  cidr_block        = "10.100.11.0/24"
+  availability_zone = "eu-west-1b"
 }
 
 resource "aws_security_group" "client_vpn" {
@@ -52,19 +48,19 @@ resource "aws_security_group" "client_vpn" {
     Name = "shared-vpn-access"
   }
 }
+
 module "client-vpn" {
   source  = "janschumann/client-vpn/aws"
   version = "0.1.0"
 
   name                    = "testvpn"
-  vpc_id                  = aws_vpc.test.id
   security_group_name     = aws_security_group.client_vpn.name
   server_certificate_name = "vpn-server" 
   client_certificate_name = "von-client"
-  client_cidr             = "10.100.0.0/22"
+  client_cidr             = "10.100.100.0/22"
   subnet_ids              = [
-    aws_subnet.target["eu-west-1a"].id,
-    aws_subnet.target["eu-west-1b"].id
+    aws_subnet.target_a.id,
+    aws_subnet.target_b.id
   ]
   transport_protocol      = "TCP"
 }
@@ -98,5 +94,4 @@ module "client-vpn" {
 |------|-------------|
 | client\_cidr | The address space of VPN clients. |
 | dns\_name | The dns name of the VPN server. |
-| errors | Error messages. |
 | routes | A list of route information in the form {network, netmask}. |
